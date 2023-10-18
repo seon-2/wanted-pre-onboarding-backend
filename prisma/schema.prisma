@@ -10,3 +10,43 @@ datasource db {
   url      = env("DATABASE_URL")
   relationMode = "prisma"
 }
+
+// 회사
+model Company {
+  // 회사ID
+  id Int @id @default(autoincrement())
+  // 회사이름
+  name String
+  // 회사가 올린 채용공고들
+  recruitments Recruitment[]
+}
+
+// 채용공고
+model Recruitment {
+  // 채용공고ID
+  id Int @id @default(autoincrement())
+  // Company : Recruitment 관계 설정 (1:N) 
+  company Company @relation(fields: [cId], references: [id])
+  // 회사ID
+  cId Int
+  // 채용포지션
+  position String
+  // 채용보상금
+  reward Int
+  // 사용기술
+  techSkill String
+
+  @@index([cId])
+}
+
+// 사용자
+model User {
+  // 사용자ID
+  id Int @id @default(autoincrement())
+  // 사용자이름
+  name String
+  // 회망포지션(null 가능)
+  position String?
+  // 보유기술(null 가능)
+  techSkill String?
+}
