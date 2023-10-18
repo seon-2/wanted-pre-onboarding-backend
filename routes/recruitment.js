@@ -52,4 +52,51 @@ router.post("/register", async (req, res) => {
   }
 });
 
+// 2. 채용공고 수정
+router.put("/update/:rId", async (req, res) => {
+  try {
+    const { rId } = req.params;
+    const { newPosition, newReward, newTechSkill } = req.body;
+
+    // id를 통해 채용공고가 존재하는지 확인
+    const existRecruitment = await client.recruitment.findUnique({
+      where: {
+        id: parseInt(rId),
+      },
+    });
+
+    // 채용공고가 존재하지 않을 때 예외처리
+    if (!existRecruitment) {
+      return res
+        .status(400)
+        .json({ ok: false, error: "존재하지 않는 채용공고입니다." });
+    }
+
+    // 빈 입력 예외처리
+    if (!newPosition || !newReward || !newTechSkill) {
+      return res
+        .status(400)
+        .json({ ok: false, error: "빈칸을 모두 입력하세요." });
+    }
+
+    // 수정
+    const updatedRecruitment = await client.recruitment.update({
+      // 조회
+      where: {
+        id: parseInt(rId),
+      },
+      // 수정
+      data: {
+        position: newPosition,
+        reward: newReward,
+        techSkill: newTechSkill,
+      },
+    });
+
+    res.json({ ok: true, updatedRecruitment });
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 module.exports = router;
