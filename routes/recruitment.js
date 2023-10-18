@@ -135,4 +135,34 @@ router.delete("/delete/:rId", async (req, res) => {
   }
 });
 
+// 4-1-1. 전체 채용공고 목록 가져오기
+router.get("/list", async (req, res) => {
+  try {
+    // 값이 여러 개일 때 findMany 사용
+    const list = await client.recruitment.findMany({});
+
+    res.json({ ok: true, list });
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+// 4-1-2. 특정 채용공고 가져오기
+router.get("/list/:rId", async (req, res) => {
+  try {
+    const { rId } = req.params;
+
+    // rId가 일치하는 값 하나만 찾을 때 findFirst 사용
+    const element = await client.recruitment.findFirst({
+      where: {
+        id: parseInt(rId),
+      },
+    });
+
+    res.json({ ok: true, element });
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 module.exports = router;
