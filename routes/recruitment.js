@@ -99,4 +99,40 @@ router.put("/update/:rId", async (req, res) => {
   }
 });
 
+// 3. 채용공고 삭제
+router.delete("/delete/:rId", async (req, res) => {
+  try {
+    const { rId } = req.params;
+
+    // id를 통해 채용공고가 존재하는지 확인
+    const existRecruitment = await client.recruitment.findUnique({
+      where: {
+        id: parseInt(rId),
+      },
+    });
+
+    // 채용공고가 존재하지 않을 때 예외처리
+    if (!existRecruitment) {
+      return res
+        .status(400)
+        .json({ ok: false, error: "존재하지 않는 채용공고입니다." });
+    }
+    /**
+     * 실제로는 body에 id를 바로 넣지 않고
+     * (악의적인 누군가가 id를 알고 있으면 body에 넣어서 임의로 삭제할 수 있음)
+     * Session이나 JWT를 사용해 보안성을 높임
+     */
+
+    const deletedRecruitment = await client.recruitment.delete({
+      where: {
+        id: parseInt(rId),
+      },
+    });
+
+    res.json({ ok: true, deletedRecruitment });
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 module.exports = router;
